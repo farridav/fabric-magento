@@ -1,24 +1,23 @@
-Magento fab
-===========
+# Fabric Magento
 
-These deployment scripts are currently designed to work seamlessly with a
-server provisioned using [this project](https://github.com/farridav/ansible-magento)
+Fabric Deployment scripts for deploying to a Magento installation that has been
+provisioned with [this project](https://github.com/farridav/ansible-magento)
 
 To get setup for working on this project you will need fabric installed
 
 NOTE: This does not currently go into any detail about how to setup your local
 environment for provisioning, I will do a better job on this ASAP
 
-Project setup (Not including provisioning or local dev)
-=======================================================
+## Project setup (Not including provisioning or local dev)
 
-fabfile/ (this repo)
-site/ (Your* Magento files)
+```
+    fabfile/ (this repo)
+    site/ (Your* Magento files)
+```
 
 * NOT Magento core, just your theme, local modules etc.
 
-Deployment
-==========
+## Deployment
 Ensure you have made an env.yml in your project root, example below:
 
 ```
@@ -31,30 +30,27 @@ Ensure you have made an env.yml in your project root, example below:
             - 12.34.567.890
 ```
 
-Then deploy to it like so:
+Then deploy to it with `fab stage deploy`
 
-    `fab stage deploy`
+## Useful Commands
 
-Useful Commands
-===============
+### List off all available fab tasks
+`fab -l`
 
-    # List off all available fab tasks
-    `fab -l`
+### Steal the DB from the given environment
+`fab <environment> get_db`
 
-    # Steal the DB from the given environment
-    `fab <environment> get_db`
+### Load a DB into the given environment
+`fab <environment> put_db`
 
-    # Load a DB into the given environment
-    `fab <environment> put_db`
+### Sync your local files with the given environment every second
+`fab <environment> develop`
 
-    # Sync your local files with the given environment every second
-    `fab <environment> develop`
+### Drop into a shell on the given environment
+`fab <environment> shell`
 
-    # Drop into a shell on the given environment
-    `fab <environment> shell`
+### Drop into a mysql shell on the given environment
+`fab <environment> dbshell`
 
-    # Drop into a mysql shell on the given environment
-    `fab <environment> dbshell`
-
-    # Update the Magento core (Used for all subsequent deploys)
-    `fab <environment> update_magento_core`
+### Update the Magento core (Used for all subsequent deploys)
+`fab <environment> update_magento_core`
