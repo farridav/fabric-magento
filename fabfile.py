@@ -75,7 +75,7 @@ def install_dependencies(release):
         requirements = run('cat modules.txt')
         for module in requirements.split():
             if not module.startswith('#'):
-                _install_module(module, release, force=False)
+                _mage_module(module, release, action='install', force=True)
 
 
 def making_symlinks(release):
@@ -83,8 +83,7 @@ def making_symlinks(release):
     Make the required symlinks
     """
     symlinks = {
-        os.path.join(release, 'media'): env.media_dir,
-        os.path.join(release, 'var'): env.var_dir
+        os.path.join(release, 'media'): env.media_dir
     }
 
     for symlink, directory in symlinks.items():
@@ -204,8 +203,16 @@ def update_magento_core():
 
     (Affects all future deploys)
     """
-    _install_module('Mage_All_Latest', env.mage_src, force=True)
+    _mage_module('Mage_All_Latest', env.mage_src, action='install', force=True)
     puts(green('Core updated, this will affect all future deploys...'))
+
+
+@task
+def uninstall_module(module, force=False):
+    """
+    UnInstall a given module
+    """
+    _mage_module(module, env.current_release, action='uninstall', force=force)
 
 
 @task
@@ -213,16 +220,17 @@ def install_module(module, force=False):
     """
     Install a given module
     """
-    _install_module(module, env.current_release, force)
+    _mage_module(module, env.current_release, action='install', force=force)
 
 
-def _install_module(module, release, force=False):
+def _mage_module(module, release, action='install', force=False):
     """
     Internal method for installing community modules
     """
     install_kwargs = {
         'channelName': 'http://connect20.magentocommerce.com/community',
         'packageName': module,
+        'action': action,
         'force': '',
     }
 
@@ -230,7 +238,7 @@ def _install_module(module, release, force=False):
         install_kwargs['force'] = '--force'
 
     with cd(release):
-        run('./mage install {channelName} {packageName} {force}'.format(
+        run('./mage {action} {channelName} {packageName} {force}'.format(
             **install_kwargs))
 
 

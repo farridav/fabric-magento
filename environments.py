@@ -28,6 +28,18 @@ def stage():
     execute(get_environment_variables)
 
 
+@task
+def live():
+    """
+    Use the Live environment
+    """
+    environment = env.environments['live']
+    env.user = environment['user']
+    env.hosts = environment['hosts']
+    env.playbook = environment['playbook']
+    execute(get_environment_variables)
+
+
 @with_settings(warn_only=True)
 def get_environment_variables(prefix='APP_'):
     """
