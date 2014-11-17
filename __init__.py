@@ -1,7 +1,9 @@
 from fabric.api import env
 import yaml
 
-from .fabfile import *  # NOQA
+from .provisioning import *  # NOQA
+from .deploy import *  # NOQA
+from .utils import *  # NOQA
 from .environments import *  # NOQA
 
 
