@@ -30,6 +30,9 @@ def deploy(id='HEAD'):
     puts(green('Switching Release...'))
     switch_release(release)
 
+    puts(green('Cleaning up old releases...'))
+    execute(cleanup)
+
     execute(restart_server)
 
 
@@ -112,3 +115,24 @@ def switch_release(new_release):
         run('ln -sfn {} {}'.format(previous_release, env.previous_release))
 
     run('ln -sfn {0} {1}'.format(new_release, env.current_release))
+
+
+@task
+def cleanup():
+    """
+    Remove all but the current and previous release from the server
+    """
+
+    with quiet():
+        releases = run('ls -1 {0}'.format(env.release_dir)).split('\n')
+
+        previous_release = run(
+            'readlink {0}'.format(env.current_release)).split('/')[-1]
+
+        new_release = run('readlink {0}'.format(
+            env.previous_release)).split('/')[-1]
+
+        for release in releases:
+            if release.strip() not in (previous_release, new_release):
+                run('rm -rf {0}'.format(
+                    os.path.join(env.release_dir, release.strip())))
