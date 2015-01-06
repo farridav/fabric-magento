@@ -7,7 +7,7 @@ def provision(args=''):
     Provision the box using ansible, optionally pass in some args,
     e.g:
 
-        ``fab vagrant provision:'--tags env'``
+        ``fab use:vagrant provision:'--tags env'``
 
     """
     with lcd('provisioning'):

@@ -37,20 +37,23 @@ Then deploy to it with `fab stage deploy`
 ### List off all available fab tasks
 `fab -l`
 
+### List off all available environments
+`fab env`
+
 ### Steal the DB from the given environment
-`fab <environment> get_db`
+`fab use:<environment> get_db`
 
 ### Load a DB into the given environment
-`fab <environment> put_db`
+`fab use:<environment> put_db`
 
 ### Sync your local files with the given environment every second
-`fab <environment> develop`
+`fab use:<environment> develop`
 
 ### Drop into a shell on the given environment
-`fab <environment> shell`
+`fab use:<environment> shell`
 
 ### Drop into a mysql shell on the given environment
-`fab <environment> dbshell`
+`fab use:<environment> dbshell`
 
 ### Update the Magento core (Used for all subsequent deploys)
-`fab <environment> update_magento_core`
+`fab use:<environment> update_magento_core`

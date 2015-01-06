@@ -1,43 +1,26 @@
-from fabric.api import env, task, execute
+from fabric.api import env, task, execute, puts
 from fabric.context_managers import quiet
+from fabric.colors import green
 from fabric.decorators import with_settings
 from fabric.operations import run
 
 
 @task
-def vagrant():
+def use(name=''):
     """
-    Use the Vagrant environment
+    Use the Given environment, if no environment is passed,
+    list off available environments
     """
-    environment = env.environments['vagrant']
-    env.user = environment['user']
-    env.hosts = environment['hosts']
-    env.playbook = environment['playbook']
-    execute(get_environment_variables)
-
-
-@task
-def stage():
-    """
-    Use the Stage environment
-    """
-    environment = env.environments['stage']
-    env.user = environment['user']
-    env.hosts = environment['hosts']
-    env.playbook = environment['playbook']
-    execute(get_environment_variables)
-
-
-@task
-def live():
-    """
-    Use the Live environment
-    """
-    environment = env.environments['live']
-    env.user = environment['user']
-    env.hosts = environment['hosts']
-    env.playbook = environment['playbook']
-    execute(get_environment_variables)
+    if not name or name not in env.environments:
+        puts(green('Available Environments: \n'))
+        for environment in env.environments:
+            puts('\t' + green(environment))
+    else:
+        environment = env.environments.get(name)
+        env.user = environment['user']
+        env.hosts = environment['hosts']
+        env.playbook = environment['playbook']
+        execute(get_environment_variables)
 
 
 @with_settings(warn_only=True)

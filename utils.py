@@ -47,14 +47,23 @@ def dbshell():
 
 
 @task
-def copy_media():
+def put_media():
     """
-    Copy local media to remote, then ensure permissions are set correctly
+    put local media to remote, then ensure permissions are set correctly
     """
     local('rsync -avz site/media/ {}@{}:{}'.format(
           env.user, env.host, env.media_dir))
     sudo('chown -R {}:www-data {}'.format(env.unix_user, env.media_dir))
     sudo('chmod -R 775 {}'.format(env.media_dir))
+
+
+@task
+def copy_media():
+    """
+    Copy media from remote to local
+    """
+    local('rsync -avz {}@{}:{} site/media/'.format(
+        env.user, env.host, env.media_dir))
 
 
 @task
