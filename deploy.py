@@ -22,7 +22,7 @@ def deploy(id='HEAD'):
     install_dependencies(release)
 
     puts(green('Making symlinks...'))
-    making_symlinks(release)
+    symlink_persistent_dirs(release)
 
     puts(green('Set permissions...'))
     set_permissions(release)
@@ -80,19 +80,19 @@ def install_dependencies(release):
                 _mage_module(module, release, action='install', force=True)
 
 
-def making_symlinks(release):
+def symlink_persistent_dirs(release):
     """
-    Make the required symlinks
+    Iterate a list of folders that are persistent between deploys, and symlink
+    them to the current release
     """
-    symlinks = {
-        os.path.join(release, 'media'): env.media_dir
-    }
+    for target in env.persistent_dirs.split(','):
+        link_name = os.path.join(release, os.path.split(target)[-1])
 
-    for symlink, directory in symlinks.items():
-        if exists(symlink):
-            run('rm -rf {}'.format(symlink))
+        # If the link_name exists, delete it
+        if exists(link_name):
+            run('rm -rf {}'.format(link_name))
 
-        run('ln -sfn {} {}'.format(directory, symlink))
+        run('ln -sfn {} {}'.format(target, link_name))
 
 
 def set_permissions(release):

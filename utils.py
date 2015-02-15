@@ -1,8 +1,8 @@
 import os
 
 from fabric.api import task, puts, local, env, cd
-from fabric.operations import run, put, open_shell, sudo, get
-from fabric.colors import green
+from fabric.operations import run, put, open_shell, sudo, get, abort
+from fabric.colors import green, red
 
 
 @task
@@ -49,21 +49,36 @@ def dbshell():
 @task
 def put_media():
     """
-    put local media to remote, then ensure permissions are set correctly
+    Put media to local to the given environment, then ensure permissions are
+    set correctly
     """
-    local('rsync -avz site/media/ {}@{}:{}'.format(
-          env.user, env.host, env.media_dir))
+
+    exclude = ['import', 'cache', 'css_secure', 'css', 'js']
+    exclusions = ''
+    for exclusion in exclude:
+        exclusions += ' --exclude ' + exclusion
+
+    if env.environment == 'live':
+        abort(red('Cannot put media to a live environment!'))
+
+    local('rsync -avz {} site/media/ {}@{}:{}'.format(
+          exclusions, env.user, env.host, env.media_dir))
     sudo('chown -R {}:www-data {}'.format(env.unix_user, env.media_dir))
     sudo('chmod -R 775 {}'.format(env.media_dir))
 
 
 @task
-def copy_media():
+def get_media():
     """
-    Copy media from remote to local
+    Copy media from the given environment to local
     """
-    local('rsync -avz {}@{}:{} site/media/'.format(
-        env.user, env.host, env.media_dir))
+    exclude = ['import', 'cache', 'css_secure', 'css', 'js']
+    exclusions = ''
+    for exclusion in exclude:
+        exclusions += ' --exclude ' + exclusion
+
+    local('rsync -avz {} {}@{}:{} site/media/'.format(
+        exclusions, env.user, env.host, env.media_dir))
 
 
 @task
@@ -83,6 +98,9 @@ def get_db():
 
 @task
 def put_db():
+    if env.name == 'live':
+        abort(red('Cannot put db to a live environment!'))
+
     put('current.sql.gz', env.release_dir)
     run('gzip -d {}'.format(os.path.join(env.release_dir, 'current.sql.gz')))
     db_kwargs = {

@@ -16,10 +16,11 @@ def use(name=''):
         for environment in env.environments:
             puts('\t' + green(environment))
     else:
-        environment = env.environments.get(name)
-        env.user = environment['user']
-        env.hosts = environment['hosts']
-        env.playbook = environment['playbook']
+        env.environment = env.environments.get(name)
+        env.name = name
+        env.user = env.environment['user']
+        env.hosts = env.environment['hosts']
+        env.playbook = env.environment['playbook']
         execute(get_environment_variables)
 
 
@@ -41,6 +42,7 @@ def get_environment_variables(prefix='APP_'):
         var_dir             # The Location of our var folder
         unix_user           # The applications user
         unix_group          # The applications group
+        app_persistent_dirs # The folders that persisten between deploys
 
     """
 
