@@ -76,8 +76,7 @@ def get_media():
     exclusions = ''
     for exclusion in exclude:
         exclusions += ' --exclude ' + exclusion
-
-    local('rsync -avz {} {}@{}:{} site/media/'.format(
+    local('rsync -avz {} {}@{}:{}/ site/media/'.format(
         exclusions, env.user, env.host, env.media_dir))
 
 
