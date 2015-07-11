@@ -1,3 +1,4 @@
+import os
 from fabric.api import task, local, lcd, env
 
 
@@ -10,7 +11,7 @@ def provision(args=''):
         ``fab use:vagrant provision:'--tags env'``
 
     """
-    with lcd('provisioning'):
+    with lcd(os.path.join(env.root, 'provisioning')):
         local('ansible-playbook {} {}'.format(env.playbook, args))
 
 
@@ -22,5 +23,8 @@ def vm(command='list-commands'):
         ``fab vm:up``
 
     """
-    with lcd('provisioning'):
+    vagrant_directory = os.path.join(
+        env.root, 'provisioning', os.path.dirname(env.playbook)
+    )
+    with lcd(vagrant_directory):
         local('vagrant {}'.format(command))
