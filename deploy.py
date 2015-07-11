@@ -1,6 +1,6 @@
 import os
 
-from fabric.api import task, puts, local, env, cd, execute
+from fabric.api import task, puts, local, env, cd, lcd, execute
 from fabric.operations import run, put, sudo
 from fabric.colors import green
 from fabric.context_managers import quiet
@@ -11,26 +11,28 @@ from .utils import restart_server, _mage_module
 
 @task
 def deploy(id='HEAD'):
-    puts(green('Beginning deploy...'))
-    git_hash = local('git rev-parse {}'.format(id), capture=True)
-    package = build_package(git_hash, 'site')
+    with lcd(env.root):
+        puts(green('Beginning deploy...'))
+        git_hash = local('git rev-parse {}'.format(id), capture=True)
+        package = build_package(git_hash, 'site')
 
-    puts(green('Deploying release...'))
-    release = deploy_package(package, os.path.join(env.release_dir, git_hash))
+        puts(green('Deploying release...'))
+        release = deploy_package(
+            package, os.path.join(env.release_dir, git_hash))
 
-    puts(green('Installing Dependencies...'))
-    install_dependencies(release)
+        puts(green('Installing Dependencies...'))
+        install_dependencies(release)
 
-    puts(green('Making symlinks...'))
-    symlink_persistent_dirs(release)
+        puts(green('Making symlinks...'))
+        symlink_persistent_dirs(release)
 
-    puts(green('Set permissions...'))
-    set_permissions(release)
+        puts(green('Set permissions...'))
+        set_permissions(release)
 
-    puts(green('Switching Release...'))
-    switch_release(release)
+        puts(green('Switching Release...'))
+        switch_release(release)
 
-    execute(restart_server)
+        execute(restart_server)
 
 
 def build_package(id, paths):

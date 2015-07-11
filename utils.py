@@ -1,6 +1,6 @@
 import os
 
-from fabric.api import task, puts, local, env, cd
+from fabric.api import task, puts, local, env, cd, lcd
 from fabric.operations import run, put, open_shell, sudo, get, abort
 from fabric.colors import green, red
 
@@ -100,8 +100,8 @@ def get_db():
 def put_db():
     if env.name == 'live':
         abort(red('Cannot put db to a live environment!'))
-
-    put('current.sql.gz', env.release_dir)
+    with lcd(env.root):
+        put('current.sql.gz', env.release_dir)
     run('gzip -d {}'.format(os.path.join(env.release_dir, 'current.sql.gz')))
     db_kwargs = {
         'user': env.db_user,
